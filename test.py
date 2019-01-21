@@ -73,10 +73,10 @@ def page_not_found(e):
 def processImage(img):
 	img = img.resize((224,224))
 	img.show()
-	img = np.asarray(img)[None, ...]
+	img = np.asarray(img)
 	img = img / (img.max() / 2) - 1
 	with graph.as_default():
-		num = np.argmax(model.predict(img[None, ...]))
+		num = np.argmax(model.predict(img[None, ..., 0:3]))
 	print (classes[num])
 load_model()
 
