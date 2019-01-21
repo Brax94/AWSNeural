@@ -78,12 +78,12 @@ def processImage(img):
 	with graph.as_default():
 		num = np.argmax(model.predict(img[None, ...]))
 	print (classes[num])
+load_model()
 
 api.add_resource(Test, '/test')
 api.add_resource(HandleImage, '/HandleImage')
 
 
 if __name__ == '__main__':
-	load_model()
 	#app.run(host="0.0.0.0", port=80)
 	#app.run(host="0.0.0.0/", port=80)
