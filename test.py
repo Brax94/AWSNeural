@@ -2,6 +2,15 @@ from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 import werkzeug
 from PIL import Image
+import keras
+from keras.applications.nasnet import NASNetMobile
+import numpy as np
+
+print('Loading model')
+model = NASNetMobile(weights=None)
+model.load_weights(
+    '/jet/prs/nasnet.h5')
+print('Loaded model')
 
 app = Flask(__name__)
 api = Api(app)
@@ -40,9 +49,10 @@ class HandleImage(Resource):
 def page_not_found(e):
 		return "Quote the server, 404,-", 404
 
-def processImage(im):
+def processImage(img):
 	im.show()
-	#TODO: TENSOR
+	img = np.asarray(img)[None, ...]
+	img = img/(img.max()/2)-1
 
 api.add_resource(Test, '/test')
 api.add_resource(HandleImage, '/HandleImage')
