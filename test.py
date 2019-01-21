@@ -84,6 +84,6 @@ api.add_resource(HandleImage, '/HandleImage')
 
 
 if __name__ == '__main__':
-	pass
+	load_model()
 	#app.run(host="0.0.0.0", port=80)
 	#app.run(host="0.0.0.0/", port=80)
