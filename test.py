@@ -5,12 +5,14 @@ from PIL import Image
 import keras
 from keras.applications.nasnet import NASNetMobile
 import numpy as np
+import json
 
 print('Loading model')
 model = NASNetMobile(weights=None)
 model.load_weights(
     '/jet/prs/nasnet.h5')
 print('Loaded model')
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -22,6 +24,19 @@ class Test(Resource):
 		return "Hello World"
 
 ALLOWED_TYPES = {"image/png", "image/JPEG", "image/jpeg", "image/jpg"}
+
+classes = {}
+with open('classes.txt') as f:
+	for line in f:
+		mstr = str(line)
+		mstr = mstr.replace('{', '')
+		mstr = mstr.replace('}', '')
+		(key, val) = mstr.split(':')
+		if key != 999:
+			val = val[:-1]
+		classes[int(key)] = val
+
+
 class HandleImage(Resource):
 	def post(self):
 		data = parser.parse_args()
@@ -49,10 +64,13 @@ class HandleImage(Resource):
 def page_not_found(e):
 		return "Quote the server, 404,-", 404
 
+
 def processImage(img):
 	img.show()
 	img = np.asarray(img)[None, ...]
 	img = img/(img.max()/2)-1
+	num = np.argmax(model.predict(img[None, ...]))
+	print (classes[num])
 
 api.add_resource(Test, '/test')
 api.add_resource(HandleImage, '/HandleImage')
