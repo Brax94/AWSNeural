@@ -50,7 +50,7 @@ def page_not_found(e):
 		return "Quote the server, 404,-", 404
 
 def processImage(img):
-	im.show()
+	img.show()
 	img = np.asarray(img)[None, ...]
 	img = img/(img.max()/2)-1
 
