@@ -10,7 +10,7 @@ import json
 print('Loading model')
 model = NASNetMobile(weights=None)
 model.load_weights(
-    '/jet/prs/nasnet.h5')
+    './nasnet.h5')
 print('Loaded model')
 
 
@@ -66,10 +66,11 @@ def page_not_found(e):
 
 
 def processImage(img):
+	img = img.resize((224,224))
 	img.show()
-	img = np.asarray(img)[None, ...]
+	img = np.asarray(img)
 	img = img/(img.max()/2)-1
-	num = np.argmax(model.predict(img[None, ...]))
+	num = np.argmax(model.predict(img[None, ..., 0:3]))
 	print (classes[num])
 
 api.add_resource(Test, '/test')
