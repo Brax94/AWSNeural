@@ -19,8 +19,6 @@ def load_model():
 	global graph
 	graph = tf.get_default_graph()
 
-
-
 app = Flask(__name__)
 api = Api(app)
 
@@ -73,11 +71,18 @@ def page_not_found(e):
 
 
 def processImage(img):
+	img = img.resize((224,224))
 	img.show()
+<<<<<<< HEAD
 	img = np.asarray(img)[None, ...]
 	img = img / (img.max() / 2) - 1
 	with graph.as_default():
 		num = np.argmax(model.predict(img[None, ...]))
+=======
+	img = np.asarray(img)
+	img = img/(img.max()/2)-1
+	num = np.argmax(model.predict(img[None, ..., 0:3]))
+>>>>>>> 386cfc8a74e719e2d096be049ab8165d56f43f6a
 	print (classes[num])
 
 api.add_resource(Test, '/test')
