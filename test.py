@@ -14,7 +14,7 @@ def load_model():
 	print('Loading model')
 	model = NASNetMobile(weights=None)
 	model.load_weights(
-		'/jet/prs/nasnet.h5')
+		'/jet/prs/AWSNeural/nasnet.h5')
 	print('Loaded model')
 	global graph
 	graph = tf.get_default_graph()
