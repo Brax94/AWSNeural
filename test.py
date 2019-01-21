@@ -6,12 +6,19 @@ import keras
 from keras.applications.nasnet import NASNetMobile
 import numpy as np
 import json
+import tensorflow as tf
 
-print('Loading model')
-model = NASNetMobile(weights=None)
-model.load_weights(
-    '/jet/prs/nasnet.h5')
-print('Loaded model')
+
+def load_model():
+	global model
+	print('Loading model')
+	model = NASNetMobile(weights=None)
+	model.load_weights(
+		'/jet/prs/nasnet.h5')
+	print('Loaded model')
+	global graph
+	graph = tf.get_default_graph()
+
 
 
 app = Flask(__name__)
@@ -68,8 +75,9 @@ def page_not_found(e):
 def processImage(img):
 	img.show()
 	img = np.asarray(img)[None, ...]
-	img = img/(img.max()/2)-1
-	num = np.argmax(model.predict(img[None, ...]))
+	img = img / (img.max() / 2) - 1
+	with graph.as_default():
+		num = np.argmax(model.predict(img[None, ...]))
 	print (classes[num])
 
 api.add_resource(Test, '/test')
@@ -77,5 +85,6 @@ api.add_resource(HandleImage, '/HandleImage')
 
 
 if __name__ == '__main__':
+	pass
 	#app.run(host="0.0.0.0", port=80)
-	app.run(host="0.0.0.0/", port=80)
+	#app.run(host="0.0.0.0/", port=80)
