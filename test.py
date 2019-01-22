@@ -4,9 +4,11 @@ import werkzeug
 from PIL import Image
 import keras
 from keras.applications.nasnet import NASNetMobile
+from keras.preprocessing import image
 import numpy as np
 import json
 import tensorflow as tf
+from keras.applications.imagenet_utils import preprocess_input, decode_predictions
 
 
 def load_model():
@@ -14,7 +16,7 @@ def load_model():
 	print('Loading model')
 	model = NASNetMobile(weights=None)
 	model.load_weights(
-		'/jet/prs/AWSNeural/nasnet.h5')
+		'nasnet.h5')
 	print('Loaded model')
 	global graph
 	graph = tf.get_default_graph()
@@ -57,7 +59,7 @@ class HandleImage(Resource):
 			'status': 'success' }
 			if photo.mimetype in ALLOWED_TYPES:
 				imageToProcess = Image.open(photo.stream)
-				processImage(imageToProcess)
+				processImage(photo.stream)
 			else:
 				retDat['status'] = 'failure'
 				retDat['reason'] = 'not an image'
@@ -71,13 +73,22 @@ def page_not_found(e):
 
 
 def processImage(img):
-	img = img.resize((224,224))
-	img.show()
-	img = np.asarray(img)
-	img = img / (img.max() / 2) - 1
+	img = image.load_img(img, target_size=(224, 224))
+	# Preprocessing the image
+	x = image.img_to_array(img)
+	x = (x/127.5) - 1
+	# x = np.true_divide(x, 255)
+	x = np.expand_dims(x, axis=0)
+
+	# Be careful how your trained model deals with the input
+	# otherwise, it won't make correct prediction!
+	#x = preprocess_input(x, mode='caffe')
+
 	with graph.as_default():
-		num = np.argmax(model.predict(img[None, ..., 0:3]))
-	print (classes[num])
+		preds = model.predict(x)
+	num = np.argmax(preds)
+	print classes[num]
+
 load_model()
 
 api.add_resource(Test, '/test')
