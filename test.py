@@ -87,7 +87,7 @@ def processImage(img):
 	with graph.as_default():
 		preds = model.predict(x)
 	num = np.argmax(preds)
-	print classes[num]
+	print (classes[num])
 
 load_model()
 
